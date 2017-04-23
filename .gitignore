@@ -1,2 +1,5 @@
 #ignore test
 test*
+*.pyc
+*~
+__pycache__/
