@@ -11,6 +11,6 @@ import scrapy
 class ClItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    urls = scrapy.Field()
+    url = scrapy.Field()
 
 

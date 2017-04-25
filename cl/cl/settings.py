@@ -22,12 +22,12 @@ NEWSPIDER_MODULE = 'cl.spiders'
 ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-#CONCURRENT_REQUESTS = 32
+#CONCURRENT_REQUESTS = 7
 
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-#DOWNLOAD_DELAY = 3
+#DOWNLOAD_DELAY = 0.3
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -64,9 +64,9 @@ SPIDER_MIDDLEWARES = {
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'cl.pipelines.ClPipeline': 300,
-#}
+ITEM_PIPELINES = {
+    'cl.pipelines.ClPipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
@@ -89,7 +89,8 @@ SPIDER_MIDDLEWARES = {
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-rules = [u'动图',u'一夜精品',u'经典动态图',u'最温馨的人体艺术',u"啪啪啪表情GIF",u'一大波动图',u'撸管必备']
+rules = [u'动图',u'一夜精品',u'经典动态图',u"啪啪啪表情GIF",u'一大波动图',u'撸管必备'] #这些必须[>25p]
+keep_if_exist_word = [u"一夜精品",u"呆呆",u'最温馨的人体艺术'] #只要包含就保留
 
 USER_AGENTS = [
 	"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1",
@@ -112,8 +113,27 @@ USER_AGENTS = [
 	"Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/535.24 (KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24"
 ]
 
-PROXIES = ['122.112.2.4:80', '210.13.84.138:80',
- '112.91.135.115:8080', '124.74.141.46:80',
- '210.53.8.67:80',
- '210.14.64.205:8080', '202.75.219.26:80',
- '210.184.110.168:80', '58.211.102.26:8080']
+headers = {'User-Agent':
+			   'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0',
+		   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+		   'Accept-Language': 'en-US,en;q=0.5',
+		   'Accept-Encoding': 'gzip, deflate, br',
+		   'Connection': 'keep-alive'}
+
+save_local = True
+save_dir = "/media/qifeng/0DE509290DE50929/test/"
+save_mongo = False
+mongo_conn = ""
+
+item_exclude = ["www1.wi.to/"]
+
+test_URl = 'http://c6.bvaz.club/'
+
+num_IP = 10 #准备采集多少个proxy IP备用
+
+num_page = 70 #搜索网页数量
+
+start_urls = ["http://c6.bvaz.club/thread0806.php?fid=7"]
+
+head_if_not_exist = "http://c6.bvaz.club/"
+
