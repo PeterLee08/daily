@@ -1,6 +1,1 @@
-#ignore test
-test*
-*.pyc
-*~
-**/__pycache__/
-**/*.pyc
+.idea/
