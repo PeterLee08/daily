@@ -5,6 +5,8 @@ import numpy
 import re
 import traceback
 import scrapy
+import sqlite3
+from hashlib import md5
 from settings import USER_AGENTS
 from settings import rules
 from bs4 import BeautifulSoup
@@ -14,6 +16,7 @@ from settings import num_page
 from settings import start_urls
 from settings import head_if_not_exist
 from settings import keep_if_exist_word
+from settings import save_dir
 
 class clspider(scrapy.spiders.Spider):
     name = "cl"
@@ -30,6 +33,14 @@ class clspider(scrapy.spiders.Spider):
             str = str + "|(.*"+ aru +".*)"
         self.p = re.compile(str)
         del str
+        self.conn = sqlite3.connect(save_dir + "pic_key.db")
+        self.conn.execute("create table if not exists url_md5(id text primary key, url text);")
+        self.conn.commit()
+        self.m = md5()
+    
+    def __del__(self):
+        self.conn.commit()
+        self.conn.close()
         
     def start_requests(self):
         for i, url in enumerate(self.start_urls):
@@ -53,7 +64,9 @@ class clspider(scrapy.spiders.Spider):
                 str = node['href']
                 if not str.startswith("http"):
                     str = self.add_head + str
-                yield scrapy.Request(str, self.parse_item, headers=headers)
+                self.m.update(bytes(str, encoding="utf-8"))
+                if self.insert_value(self.m.hexdigest(), str):
+                    yield scrapy.Request(str, self.parse_item, headers=headers)
         except:
             s = traceback.format_exc()
             print(s)
@@ -67,7 +80,7 @@ class clspider(scrapy.spiders.Spider):
                 if nd.has_attr("onclick"):
                     uri = nd["src"]
                     if not uri.startswith("http"):
-                        scrapy.log.ERROR("src img  not startswith http")
+                        print("src img  not startswith http")
                         return
                     item["url"] = uri
                     yield item
@@ -75,5 +88,12 @@ class clspider(scrapy.spiders.Spider):
         except:
             s = traceback.format_exc()
             print ("parse iterm === \n" + s)
+
+    def insert_value(self,md5, url):
+        try:
+            self.conn.execute("insert into url_md5 values(?,?);",(md5,url))
+            return True
+        except:
+            return False
 
 
