@@ -48,7 +48,7 @@ class ClPipeline(object):
             md5 = self.m.hexdigest()
             filename = url.split("/")[-1]
             print("dealing with file %s ..."%filename)
-            if self.insert_value(md5,filename):
+            if self.insert_value(md5,url):
                 with open(save_dir+url.split("/")[-1],"wb") as f:
                     f.write(bc)
             print("file %s done" % filename)
