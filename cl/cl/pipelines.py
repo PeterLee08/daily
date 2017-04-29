@@ -39,7 +39,9 @@ class ClPipeline(object):
         headers['User-Agent'] = random.choice(USER_AGENTS)
         req = request.Request(url,headers = headers)
         try:
-            res = request.urlopen(req)
+            filename = url.split("/")[-1]
+            print("dealing with file %s ..."%filename)
+            res = request.urlopen(req,timeout=20)
         except:
             s = traceback.format_exc()
             print(url +" headers\t:"+str(headers)+"\n" + s)
@@ -48,8 +50,6 @@ class ClPipeline(object):
         self.m.update(bc)
         if save_local:
             md5 = self.m.hexdigest()
-            filename = url.split("/")[-1]
-            print("dealing with file %s ..."%filename)
             if self.insert_value(md5,url):
                 with open(save_dir+md5+"."+filename.split(".")[-1],"wb") as f:
                     f.write(bc)
