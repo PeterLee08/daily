@@ -16,14 +16,16 @@ from settings import USER_AGENTS
 from settings import item_exclude
 import traceback
 import sqlite3
+import redis
 
 class ClPipeline(object):
     m = hashlib.md5()
 
     def __init__(self):
-        self.conn = sqlite3.connect(save_dir + "pic_key.db")
-        self.conn.execute("create table if not exists md5_filename(id text primary key, filename text);")
-        self.conn.commit()
+        self.conn = redis.Redis(host='localhost', port=6379, db=0)
+#        self.conn = sqlite3.connect(save_dir + "pic_key.db")
+#        self.conn.execute("create table if not exists md5_filename(id text primary key, filename text);")
+#        self.conn.commit()
 
     @staticmethod
     def report_hook(count, block_size, total_size):
@@ -40,7 +42,7 @@ class ClPipeline(object):
             res = request.urlopen(req)
         except:
             s = traceback.format_exc()
-            print(url +"\t:" + s)
+            print(url +" headers\t:"+str(headers)+"\n" + s)
             return
         bc = res.read()
         self.m.update(bc)
@@ -49,17 +51,27 @@ class ClPipeline(object):
             filename = url.split("/")[-1]
             print("dealing with file %s ..."%filename)
             if self.insert_value(md5,url):
-                with open(save_dir+url.split("/")[-1],"wb") as f:
+                with open(save_dir+md5+"."+filename.split(".")[-1],"wb") as f:
                     f.write(bc)
+            else:
+                print("%s skiped"%filename)
             print("file %s done" % filename)
 
     def insert_value(self,md5,filename):
-        try:
-            self.conn.execute("insert into md5_filename values(?,?);",(md5,filename))
+        if self.conn.setnx("file:"+md5,filename):
+            print("keep %s"%filename)
             return True
-        except:
+        else:
+            print("skip")
             return False
+ #       try:
+ #           self.conn.execute("insert into md5_filename values(?,?);",(md5,filename))
+ #           return True
+ #       except:
+ #           s = traceback.format_exc()
+ #           print(s)
+ #           return False
 
-    def __del__(self):
-        self.conn.commit()
-        self.conn.close()
+ #   def __del__(self):
+ #       self.conn.commit()
+ #       self.conn.close()

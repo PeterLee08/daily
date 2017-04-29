@@ -125,13 +125,13 @@ save_dir = "/media/qifeng/0DE509290DE50929/test/"
 save_mongo = False
 mongo_conn = ""
 
-item_exclude = ["www1.wi.to/"]
+item_exclude = []
 
 test_URl = 'http://c6.bvaz.club/'
 
 num_IP = 10 #准备采集多少个proxy IP备用
 
-num_page = 70 #搜索网页数量
+num_page = 90 #搜索网页数量
 
 start_urls = ["http://c6.bvaz.club/thread0806.php?fid=7"]
 

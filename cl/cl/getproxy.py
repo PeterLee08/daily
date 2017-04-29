@@ -45,14 +45,14 @@ def IP_Test(IP,URL_test,set_timeout=IP_test_timeout):#测试IP地址是否可用
     except:
         return False
 
-def get_IPlist(URL):#获取可用的IP地址
+def get_IPlist(URL,testurl):#获取可用的IP地址
     IP_list=[]
     start_html = requests.get(URL, headers=headers)
     start_html.encoding = 'utf-8'
     bsObj = BeautifulSoup(start_html.text, 'html.parser')
     for span in bsObj.find("div", {"class": "content"}).findAll("p"):
         span_IP=re.findall(r'\d+.\d+.\d+.\d+:\d+', span.text)
-        if IP_Test(span_IP[0],test_URl):#测试通过
+        if IP_Test(span_IP[0],testurl):#测试通过
             IP_list.append(span_IP[0])
             print('测试通过，IP地址为'+str(span_IP))
             if len(IP_list)>num_IP-1: #搜集够N个IP地址就行了
@@ -71,4 +71,5 @@ def get_new_url():
     return tag.a["href"]
 
 base_url = get_new_url()
-PROXIES = get_IPlist(base_url)
+PROXIES = get_IPlist(base_url,test_URl)
+

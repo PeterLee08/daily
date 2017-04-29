@@ -5,7 +5,7 @@ import numpy
 import re
 import traceback
 import scrapy
-import sqlite3
+import redis
 from hashlib import md5
 from settings import USER_AGENTS
 from settings import rules
@@ -16,7 +16,6 @@ from settings import num_page
 from settings import start_urls
 from settings import head_if_not_exist
 from settings import keep_if_exist_word
-from settings import save_dir
 
 class clspider(scrapy.spiders.Spider):
     name = "cl"
@@ -33,18 +32,16 @@ class clspider(scrapy.spiders.Spider):
             str = str + "|(.*"+ aru +".*)"
         self.p = re.compile(str)
         del str
-        self.conn = sqlite3.connect(save_dir + "pic_key.db")
-        self.conn.execute("create table if not exists url_md5(id text primary key, url text);")
-        self.conn.commit()
+        self.conn = redis.Redis(host='localhost', port=6379, db=0)
         self.m = md5()
-    
+
     def __del__(self):
         self.conn.commit()
         self.conn.close()
         
     def start_requests(self):
         for i, url in enumerate(self.start_urls):
-            for j in numpy.arange(1,num_page,1):
+            for j in numpy.arange(1,num_page+1,1):
                 headers['User-Agent'] = random.choice(USER_AGENTS)
                 yield scrapy.Request(url+"&page={j}".format(j=j),headers=headers,callback=self.parse)
     
@@ -90,10 +87,6 @@ class clspider(scrapy.spiders.Spider):
             print ("parse iterm === \n" + s)
 
     def insert_value(self,md5, url):
-        try:
-            self.conn.execute("insert into url_md5 values(?,?);",(md5,url))
-            return True
-        except:
-            return False
+        return self.conn.setnx("url:"+md5,url)
 
 
