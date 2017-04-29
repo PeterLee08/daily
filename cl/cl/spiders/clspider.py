@@ -35,9 +35,7 @@ class clspider(scrapy.spiders.Spider):
         self.conn = redis.Redis(host='localhost', port=6379, db=0)
         self.m = md5()
 
-    def __del__(self):
-        self.conn.commit()
-        self.conn.close()
+
         
     def start_requests(self):
         for i, url in enumerate(self.start_urls):
@@ -62,8 +60,8 @@ class clspider(scrapy.spiders.Spider):
                 if not str.startswith("http"):
                     str = self.add_head + str
                 self.m.update(bytes(str, encoding="utf-8"))
-                if self.insert_value(self.m.hexdigest(), str):
-                    yield scrapy.Request(str, self.parse_item, headers=headers)
+                #if self.insert_value(self.m.hexdigest(), str):
+                yield scrapy.Request(str, self.parse_item, headers=headers)
         except:
             s = traceback.format_exc()
             print(s)
