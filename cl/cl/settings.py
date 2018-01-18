@@ -89,8 +89,8 @@ ITEM_PIPELINES = {
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-rules = [u'动图',u'一夜精品',u'经典动态图',u"啪啪啪表情GIF",u'一大波动图',u'撸管必备'] #这些必须[>25p]
-keep_if_exist_word = [u"一夜精品",u"呆呆",u'最温馨的人体艺术'] #只要包含就保留
+rules = [] #这些必须[>25p]
+keep_if_exist_word = [] #只要包含就保留
 
 USER_AGENTS = [
 	"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1",
